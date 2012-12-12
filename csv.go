@@ -11,8 +11,12 @@ import (
 )
 
 func main() {
-	var encoding string
-	flag.StringVar(&encoding, "enc", "", "input encoding, e.g. latin9, defaults to UTF-8")
+	var encoding, seperator string
+	flag.StringVar(&encoding, "e", "", "input encoding, e.g. latin9, defaults to UTF-8")
+	flag.StringVar(&seperator, "s", "|", "seperator string")
+	// TODO
+	//var alignRight bool
+	//flag.BoolVar(&alignRight, "r", false, "align values to the right instead to the left")
 
 	flag.Parse()
 
@@ -69,7 +73,7 @@ func main() {
 		for i, col := range row {
 			fmt.Printf(fmt.Sprint("%-", colLens[i] + 1, "s"), col)
 			if i != len(colLens) {
-				fmt.Print("| ")
+				fmt.Printf("%s ", seperator)
 			}
 		}
 		fmt.Print("\n")
