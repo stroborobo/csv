@@ -5,20 +5,28 @@ import (
 	"os"
 	"io"
 	"fmt"
+	"unicode/utf8"
 	"encoding/csv"
 	"code.google.com/p/go-charset/charset"
 	_ "code.google.com/p/go-charset/data"
 )
 
 func main() {
-	var encoding, seperator string
+	var encoding, parseSeperator, printSeperator string
 	flag.StringVar(&encoding, "e", "", "input encoding, e.g. latin9, defaults to UTF-8")
-	flag.StringVar(&seperator, "s", "|", "seperator string")
+	flag.StringVar(&parseSeperator, "c", ";", "seperator char used for parsing")
+	flag.StringVar(&printSeperator, "s", "|", "seperator string used for printing")
 	// TODO
 	//var alignRight bool
 	//flag.BoolVar(&alignRight, "r", false, "align values to the right instead to the left")
 
 	flag.Parse()
+
+	if utf8.RuneCountInString(parseSeperator) > 1 {
+		fmt.Fprintln(os.Stderr, "The parse seperator must be a single char.")
+		flag.Usage()
+		os.Exit(5)
+	}
 
 	var f *os.File
 	var err error
@@ -42,7 +50,7 @@ func main() {
 		inputReader = f
 	}
 	r := csv.NewReader(inputReader)
-	r.Comma = ';'
+	r.Comma, _ = utf8.DecodeLastRuneInString(parseSeperator)
 	r.TrailingComma = true
 	r.TrimLeadingSpace = true
 
@@ -61,7 +69,7 @@ func main() {
 	colLens := make(map[int]int)
 	for _, row := range data {
 		for i, col := range row {
-			cl := len(col)
+			cl := utf8.RuneCountInString(col)
 			l, ex := colLens[i]
 			if !ex || cl > l {
 				colLens[i] = cl
@@ -72,8 +80,8 @@ func main() {
 	for _, row := range data {
 		for i, col := range row {
 			fmt.Printf(fmt.Sprint("%-", colLens[i] + 1, "s"), col)
-			if i != len(colLens) {
-				fmt.Printf("%s ", seperator)
+			if i != len(colLens) - 1 {
+				fmt.Printf("%s ", printSeperator)
 			}
 		}
 		fmt.Print("\n")
