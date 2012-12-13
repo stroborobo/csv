@@ -5,6 +5,7 @@ import (
 	"os"
 	"io"
 	"fmt"
+	"strings"
 	"unicode/utf8"
 	"encoding/csv"
 	"code.google.com/p/go-charset/charset"
@@ -12,8 +13,12 @@ import (
 )
 
 func main() {
-	var encoding, parseSeperator, printSeperator string
-	flag.StringVar(&encoding, "e", "", "input encoding, e.g. latin9, defaults to UTF-8")
+	var fileEncoding,
+	    outputEncoding,
+	    parseSeperator,
+	    printSeperator string
+	flag.StringVar(&fileEncoding, "e", "", "input encoding, e.g. latin9, defaults to UTF-8")
+	flag.StringVar(&outputEncoding, "o", "", "output encoding, e.g. latin9, defaults to LC_ALL/LANG or UTF-8")
 	flag.StringVar(&parseSeperator, "c", ";", "seperator char used for parsing")
 	flag.StringVar(&printSeperator, "s", "|", "seperator string used for printing")
 	// TODO
@@ -28,6 +33,10 @@ func main() {
 		os.Exit(5)
 	}
 
+	if outputEncoding == "" {
+		outputEncoding = getOutputEnc()
+	}
+
 	var f *os.File
 	var err error
 	if len(flag.Args()) != 0 {
@@ -40,10 +49,10 @@ func main() {
 		f = os.Stdin
 	}
 	var inputReader io.Reader
-	if encoding != "" {
-		inputReader, err = charset.NewReader(encoding, f)
+	if fileEncoding != "" {
+		inputReader, err = charset.NewReader(fileEncoding, f)
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
+			fmt.Fprintf(os.Stderr, "input encoding: %s\n", err)
 			os.Exit(20)
 		}
 	} else {
@@ -77,13 +86,42 @@ func main() {
 		}
 	}
 
+	var out io.Writer = os.Stdout;
+	if outputEncoding != "UTF-8" {
+		out, err = charset.NewWriter(outputEncoding, out)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "output encoding: %s\n", err)
+			os.Exit(40)
+		}
+	}
+
 	for _, row := range data {
 		for i, col := range row {
-			fmt.Printf(fmt.Sprint("%-", colLens[i] + 1, "s"), col)
+			fmt.Fprintf(out, fmt.Sprint("%-", colLens[i] + 1, "s"), col)
 			if i != len(colLens) - 1 {
-				fmt.Printf("%s ", printSeperator)
+				fmt.Fprintf(out, "%s ", printSeperator)
 			}
 		}
-		fmt.Print("\n")
+		fmt.Fprint(out, "\n")
 	}
+}
+
+func getOutputEnc() string {
+	env := os.Getenv("LC_ALL")
+	if len(env) == 0 {
+		env = os.Getenv("LANG")
+		if len(env) == 0 {
+			return "UTF-8"
+		}
+	}
+	arr := strings.Split(env, ".")
+	if len(arr) != 2 {
+		return "UTF-8"
+	}
+	enc := arr[1]
+	// alias
+	if strings.ToLower(enc) == "iso8859-15" {
+		enc = "iso-8859-15"
+	}
+	return enc
 }
