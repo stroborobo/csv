@@ -1,7 +1,7 @@
 csv
 ===
 
-A very simple csv formatter
+A very simple csv pretty printer
 
 
 Usage
