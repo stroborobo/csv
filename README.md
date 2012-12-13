@@ -14,6 +14,6 @@ Usage
 	  -s="|": seperator string used for printing
 	
 	> csv -e latin1 file.csv
-	import001 | ImpXD001 ä | 14621001 | 15 | 24
-	import002 | ImpXD002 ö | 14621002 | 17 | 29
-	import003 | ImpXD003 ü | 14621003 | 43 | 81
+	Röt   | Rotationsachse | 14621001 | 15 | 24
+	Mäsk  | Katzenmaske    | 23042    | 17 | 29
+	Stäub | Waldfeenstaub  | 2373     | 43 | 81
