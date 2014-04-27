@@ -83,12 +83,14 @@ func main() {
 	}
 
 	colLens := make(map[int]int)
-	for _, row := range data {
-		for i, col := range row {
+	for ri, row := range data {
+		for ci, col := range row {
+			col = strings.Trim(col, " \t")
+			data[ri][ci] = col
 			cl := utf8.RuneCountInString(col)
-			l, ex := colLens[i]
+			l, ex := colLens[ci]
 			if !ex || cl > l {
-				colLens[i] = cl
+				colLens[ci] = cl
 			}
 		}
 	}
