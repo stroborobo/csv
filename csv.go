@@ -62,6 +62,7 @@ func main() {
 	r.Comma, _ = utf8.DecodeLastRuneInString(parseSeperator)
 	r.TrailingComma = true
 	r.TrimLeadingSpace = true
+	r.LazyQuotes = true
 
 	data, err := r.ReadAll()
 	if len(os.Args) == 2 {
