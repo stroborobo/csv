@@ -9,6 +9,7 @@ Usage
 	> csv -h
 	Usage of csv:
 	  -c=";": seperator char used for parsing
+	  -d=false: debug output
 	  -e="": input encoding, e.g. latin9, defaults to UTF-8
 	  -o="": output encoding, e.g. latin9, defaults to LC_ALL/LANG or UTF-8
 	  -s="|": seperator string used for printing
