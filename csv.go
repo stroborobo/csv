@@ -17,10 +17,12 @@ func main() {
 	    outputEncoding,
 	    parseSeperator,
 	    printSeperator string
+	var debug bool
 	flag.StringVar(&fileEncoding, "e", "", "input encoding, e.g. latin9, defaults to UTF-8")
 	flag.StringVar(&outputEncoding, "o", "", "output encoding, e.g. latin9, defaults to LC_ALL/LANG or UTF-8")
 	flag.StringVar(&parseSeperator, "c", ";", "seperator char used for parsing")
 	flag.StringVar(&printSeperator, "s", "|", "seperator string used for printing")
+	flag.BoolVar(&debug, "d", false, "debug output")
 	// TODO
 	//var alignRight bool
 	//flag.BoolVar(&alignRight, "r", false, "align values to the right instead to the left")
@@ -74,6 +76,10 @@ func main() {
 	}
 	if len(data) == 0 || len(data[0]) == 0 {
 		os.Exit(0)
+	}
+
+	if debug {
+		fmt.Fprintf(os.Stderr, "DEBUG columns: %d\n", len(data[0]))
 	}
 
 	colLens := make(map[int]int)
