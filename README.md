@@ -3,7 +3,6 @@ csv
 
 A very simple csv pretty printer
 
-
 Usage
 -----
 
@@ -18,3 +17,8 @@ Usage
 	Röt   | Rotationsachse | 14621001 | 15 | 24
 	Mäsk  | Katzenmaske    | 23042    | 17 | 29
 	Stäub | Waldfeenstaub  | 2373     | 43 | 81
+
+TODO
+----
+
+* Print horizontally (one record per column, not per row)
